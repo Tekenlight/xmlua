@@ -11,7 +11,8 @@
 ]>
 <!--This is comment-->
 <example>
-  <![CDATA[<p>Hello world!</p>]]>
-  <text>This is Text</text>
-  <text>&ref;</text>
+<text>Simple text</text>
+<text><![CDATA[<p>Hello world!</p>]]></text>
+<text>This is Text &amp; text</text>
+<text>&ref;</text>
 </example>

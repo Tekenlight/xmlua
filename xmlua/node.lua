@@ -27,6 +27,14 @@ function Node:content()
   return libxml2.xmlNodeGetContent(self.node)
 end
 
+function Node:node_content(doc)
+  return libxml2.xmlNodeListGetString(doc, self.node)
+end
+
+function Node:is_leaf_node()
+  return libxml2.xmlIsLeafNode(self.document, self.node)
+end
+
 function Node:text()
   return ""
 end

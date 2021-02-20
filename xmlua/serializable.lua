@@ -28,9 +28,9 @@ end
 
 function Serializable:to_html(options)
   return save(self,
-              bit.bor(ffi.C.XML_SAVE_FORMAT,
-                      ffi.C.XML_SAVE_NO_DECL,
-                      ffi.C.XML_SAVE_NO_EMPTY,
+              (ffi.C.XML_SAVE_FORMAT|
+                      ffi.C.XML_SAVE_NO_DECL|
+                      ffi.C.XML_SAVE_NO_EMPTY|
                       ffi.C.XML_SAVE_AS_HTML),
               "failed to generate HTML string",
               options)
@@ -38,7 +38,7 @@ end
 
 function Serializable:to_xml(options)
   return save(self,
-              bit.bor(ffi.C.XML_SAVE_FORMAT,
+              (ffi.C.XML_SAVE_FORMAT|
                       ffi.C.XML_SAVE_AS_XML),
               "failed to generate XML string",
               options)

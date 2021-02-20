@@ -19,11 +19,13 @@ require("xmlua.libxml2.entities")
 local ffi = require("ffi")
 local loaded, xml2 = pcall(ffi.load, "xml2")
 if not loaded then
-  if _G.jit.os == "Windows" then
+  --[[if _G.jit.os == "Windows" then
     xml2 = ffi.load("libxml2-2.dll")
   else
     xml2 = ffi.load("libxml2.so.2")
   end
+  --]]
+  xml2 = ffi.load("libxml2.so.2")
 end
 local function __xmlParserVersionIsAvailable()
   local success, err = pcall(function()
@@ -94,7 +96,7 @@ function libxml2.htmlParseChunk(context, chunk, is_terminated)
     return xml2.htmlParseChunk(context, nil, 0, is_terminated)
   end
 end
-jit.off(libxml2.htmlParseChunk)
+--jit.off(libxml2.htmlParseChunk)
 
 function libxml2.htmlCtxtReadMemory(context, html, options)
   local url = nil
@@ -103,10 +105,7 @@ function libxml2.htmlCtxtReadMemory(context, html, options)
     url = options.url
     encoding = options.encoding
   end
-  local parse_options = bit.bor(ffi.C.HTML_PARSE_RECOVER,
-                                ffi.C.HTML_PARSE_NOERROR,
-                                ffi.C.HTML_PARSE_NOWARNING,
-                                ffi.C.HTML_PARSE_NONET)
+  local parse_options = ffi.C.HTML_PARSE_RECOVER| ffi.C.HTML_PARSE_NOERROR| ffi.C.HTML_PARSE_NOWARNING| ffi.C.HTML_PARSE_NONET
   local document = xml2.htmlCtxtReadMemory(context,
                                            html,
                                            #html,
@@ -118,7 +117,7 @@ function libxml2.htmlCtxtReadMemory(context, html, options)
   end
   return ffi.gc(document, libxml2.xmlFreeDoc)
 end
-jit.off(libxml2.htmlCtxtReadMemory)
+--jit.off(libxml2.htmlCtxtReadMemory)
 
 function libxml2.htmlNewDoc(uri, externa_dtd)
   local document = xml2.htmlNewDoc(uri, externa_dtd)
@@ -152,7 +151,7 @@ local function parse_xml_parse_options(value, default)
   if value_type == "table" then
     local options = 0
     for _, v in pairs(value) do
-      options = bit.bor(options, parse_xml_parse_options(v, default))
+      options = (options| parse_xml_parse_options(v, default))
     end
     return options
   elseif value_type == "number" then
@@ -174,10 +173,7 @@ end
 function libxml2.xmlCtxtReadMemory(context, xml, options)
   local url = nil
   local encoding = nil
-  local default_parse_options = bit.bor(ffi.C.XML_PARSE_RECOVER,
-                                        ffi.C.XML_PARSE_NOERROR,
-                                        ffi.C.XML_PARSE_NOWARNING,
-                                        ffi.C.XML_PARSE_NONET)
+  local default_parse_options = (ffi.C.XML_PARSE_RECOVER| ffi.C.XML_PARSE_NOERROR| ffi.C.XML_PARSE_NOWARNING| ffi.C.XML_PARSE_NONET)
   local parse_options = nil
   if options then
     url = options.url
@@ -199,7 +195,7 @@ function libxml2.xmlCtxtReadMemory(context, xml, options)
   end
   return ffi.gc(document, libxml2.xmlFreeDoc)
 end
-jit.off(libxml2.xmlCtxtReadMemory)
+--jit.off(libxml2.xmlCtxtReadMemory)
 
 function libxml2.xmlParseChunk(context, chunk, is_terminated)
   if chunk then
@@ -272,7 +268,16 @@ function libxml2.xmlNewNs(node, uri, prefix)
   if new_namespace == ffi.NULL then
     return nil
   end
-  return new_namespace
+  --return ffi.gc(new_namespace, libxml2.xmlFreeNs)
+  --Bug fix, to avoid double garbage collection.
+  if (node == ffi.NULL) then
+	  -- If node is nil, the namespace that will get created
+	  -- will be a dangling pointer
+	  -- It should have an independent gc action
+	  return ffi.gc(new_namespace, libxml2.xmlFreeNs)
+  else
+	  return new_namespace
+  end
 end
 
 function libxml2.xmlFreeNs(namespace)
@@ -535,6 +540,25 @@ function libxml2.xmlNodeGetContent(node)
   return lua_string
 end
 
+function libxml2.xmlIsLeafNode(doc, node)
+	local i = xml2.xmlIsLeafNode(doc, node);
+	if (i == 1) then
+		return true;
+	else
+		return false;
+	end
+end
+
+function libxml2.xmlNodeListGetString(doc, node)
+  local content = xml2.xmlNodeListGetString(doc, node.children, 1)
+  if content == ffi.NULL then
+    return nil
+  end
+  local lua_string = ffi.string(content)
+  libxml2.xmlFree(content)
+  return lua_string
+end
+
 function libxml2.xmlReplaceNode(old_node, new_node)
   local was_freed = false
   local was_unlinked = (old_node == new_node
@@ -585,13 +609,13 @@ function libxml2.xmlSaveDoc(context, document)
   local written = xml2.xmlSaveDoc(context, document)
   return written ~= -1
 end
-jit.off(libxml2.xmlSaveDoc)
+--jit.off(libxml2.xmlSaveDoc)
 
 function libxml2.xmlSaveTree(context, node)
   local written = xml2.xmlSaveTree(context, node)
   return written ~= -1
 end
-jit.off(libxml2.xmlSaveTree)
+--jit.off(libxml2.xmlSaveTree)
 
 local function error_ignore(user_data, err)
 end
@@ -628,7 +652,7 @@ else
     return true
   end
 end
-jit.off(libxml2.xmlXPathSetContextNode)
+--jit.off(libxml2.xmlXPathSetContextNode)
 
 function libxml2.xmlXPathEvalExpression(expression, context)
   local object = xml2.xmlXPathEvalExpression(expression, context)
@@ -637,7 +661,7 @@ function libxml2.xmlXPathEvalExpression(expression, context)
   end
   return ffi.gc(object, xml2.xmlXPathFreeObject)
 end
-jit.off(libxml2.xmlXPathEvalExpression)
+--jit.off(libxml2.xmlXPathEvalExpression)
 
 function libxml2.xmlStrdup(string)
   return xml2.xmlStrdup(string)

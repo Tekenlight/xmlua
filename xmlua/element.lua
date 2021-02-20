@@ -1,4 +1,4 @@
---- @module xmlua
+-- @module xmlua
 
 --- The class for element node.
 -- @type Element
@@ -399,6 +399,46 @@ function methods:text()
   return self:content()
 end
 
+function methods:node_text()
+  return self:node_content(self.document)
+end
+
+function methods:attributes()
+	local attrs = {};
+	local node = self.node;
+	local att = node.properties
+	while (att ~= ffi.NULL) do
+		local att_name = nil;
+		local att_ns = nil;
+		if (att.ns ~= ffi.NULL and att.ns.href ~= ffi.NULL) then
+			att_ns = ffi.string(att.ns.href);
+		end 
+		local value = nil;
+		att_name = ffi.string(att.name);
+		if (att_ns ~= nil) then
+			value = libxml2.xmlGetNsProp(node, att_name, att_ns)
+		else
+			value =  libxml2.xmlGetProp(node, att_name)
+		end
+		if (att_ns == nil) then
+			att_name = '{}'..att_name;
+		else
+			att_name = '{'..att_ns..'}'..att_name;
+		end
+		attrs[att_name] = value;
+		att = att.next
+	end
+	return attrs;
+end
+
+function methods:namespace()
+	local ns = nil;
+	if (self.node.ns ~= ffi.NULL) then
+		ns = ffi.string(self.node.ns.href);
+	end
+	return ns;
+end
+
 function methods:set_namespace(namespace)
   libxml2.xmlSetNs(self.node, namespace.node)
 end
@@ -417,7 +457,7 @@ end
 
 -- For internal use
 function Element.build(document, name, attributes)
-  return create_sub_element(document.node, nil, name, attributes)
+  return create_sub_element(document.raw_document, nil, name, attributes)
 end
 
 function Element.new(document, node)

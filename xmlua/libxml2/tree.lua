@@ -335,6 +335,8 @@ int xmlUnsetProp(xmlNodePtr node, const xmlChar *name);
 
 void xmlNodeSetContentLen(xmlNodePtr cur, const xmlChar *content, int len);
 xmlChar *xmlNodeGetContent(const xmlNode *cur);
+xmlChar * xmlNodeListGetString(xmlDocPtr doc, const xmlNode *list, int inLine);
+int xmlIsLeafNode(xmlDocPtr doc, const xmlNode *node);
 xmlNodePtr xmlReplaceNode(xmlNodePtr old, xmlNodePtr cur);
 xmlChar *xmlGetNodePath(const xmlNode *node);
 

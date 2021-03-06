@@ -15,6 +15,9 @@ require("xmlua.libxml2.html-tree")
 require("xmlua.libxml2.xmlsave")
 require("xmlua.libxml2.xpath")
 require("xmlua.libxml2.entities")
+require("xmlua.libxml2.schemas")
+require("xmlua.libxml2.relaxng")
+require("xmlua.libxml2.reader")
 
 local ffi = require("ffi")
 local loaded, xml2 = pcall(ffi.load, "xml2")
@@ -701,6 +704,75 @@ end
 
 function libxml2.xmlGetDtdEntity(document, name)
  return xml2.xmlGetDtdEntity(document, name)
+end
+
+local function gc_for_reader(reader)
+	xml2.xmlFreeTextReader(reader);
+	xml2.xmlCleanupParser();
+end
+
+function libxml2.xmlReaderForMemory(xml)
+  local url = nil;
+  local encoding = nil;
+  local options = 0;
+
+  local reader = xml2.xmlReaderForMemory(xml, #xml, url, encoding, options)
+  if reader == ffi.NULL then
+    return nil
+  end
+  --return ffi.gc(reader, xml2.xmlFreeTextReader)
+  return ffi.gc(reader, gc_for_reader)
+end
+
+function libxml2.xmlTextReaderRead(reader)
+	return xml2.xmlTextReaderRead(reader);
+end
+
+function libxml2.xmlTextReaderConstName(reader)
+	return xml2.xmlTextReaderConstName(reader);
+end
+
+function libxml2.xmlTextReaderConstLocalName(reader)
+	return xml2.xmlTextReaderConstLocalName(reader);
+end
+
+function libxml2.xmlTextReaderConstNamespaceUri(reader)
+	return xml2.xmlTextReaderConstNamespaceUri(reader);
+end
+
+function libxml2.xmlTextReaderConstValue(reader)
+	return xml2.xmlTextReaderConstValue(reader);
+end
+
+function libxml2.xmlTextReaderIsEmptyElement(reader)
+	return xml2.xmlTextReaderIsEmptyElement(reader);
+end
+
+function libxml2.xmlTextReaderHasValue(reader)
+	return xml2.xmlTextReaderHasValue(reader);
+end
+
+function libxml2.xmlTextReaderDepth(reader)
+	return xml2.xmlTextReaderDepth(reader);
+end
+
+function libxml2.xmlTextReaderNodeType(reader)
+	return xml2.xmlTextReaderNodeType(reader);
+end
+
+function libxml2.xmlTextReaderAttributeCount(reader)
+	return xml2.xmlTextReaderAttributeCount(reader);
+end
+
+function libxml2.xmlTextReaderGetAttributeNo(reader, n)
+	local c_str_attr = xml2.xmlTextReaderGetAttributeNo(reader, n);
+	local attr_string = ffi.string(c_str_attr);
+	libxml2.xmlFree(c_str_attr);
+	return attr_string;
+end
+
+function libxml2.xmlTextReaderMoveToAttributeNo(reader, n)
+	return xml2.xmlTextReaderMoveToAttributeNo(reader, n);
 end
 
 return libxml2

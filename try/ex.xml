@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:example_struct xmlns:ns1="http://example.com" xmlns:ns2="http://example1.com"><ns2:element_struct2><author>123</author><title>234</title><genre>345</genre></ns2:element_struct2><author>asdf</author><title>adfas</title><genre>as</genre><s2><author>A43</author><title>A44</title><genre>A45</genre></s2><s2><author>B43</author><title>B44</title><genre>B45</genre></s2><ns1:basic_string_simple_content attr2="CHA" attr1="123">GOWRI</ns1:basic_string_simple_content></ns1:example_struct>

@@ -247,12 +247,16 @@ local function create_start_element_callback(user_callback)
       local raw_attribute_uri = raw_attributes[base_index + 2]
       local raw_attribute_value = raw_attributes[base_index + 3]
       local raw_attribute_end = raw_attributes[base_index + 4]
+	  local value_begin = ffi.cast("long", raw_attribute_value);
+	  local value_end = ffi.cast("long", raw_attribute_end);
+	  local length = value_end - value_begin;
       local attribute = {
         local_name = to_string(raw_attribute_local_name),
         prefix = to_string(raw_attribute_prefix),
         uri = to_string(raw_attribute_uri),
-        value = to_string(raw_attribute_value,
-                          raw_attribute_end - raw_attribute_value),
+        --value = to_string(raw_attribute_value,
+                          --raw_attribute_end - raw_attribute_value),
+        value = to_string(raw_attribute_value, length),
         is_default = i > n_attributes,
       }
       table.insert(attributes, attribute)

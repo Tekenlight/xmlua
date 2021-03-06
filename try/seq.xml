@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:seq_struct xmlns:ns1="http://example.com">
+  <one>1</one>
+  <two>2</two>
+  <three>3</three>
+  <four>4</four>
+  <three>3</three>
+  <four>4</four>
+  <three>3</three>
+  <four>4</four>
+  <one>11</one>
+  <two>22</two>
+  <three>33</three>
+  <four>44</four>
+  <three>33</three>
+  <four>44</four>
+  <three>33</three>
+  <four>44</four>
+  <ns2:five xmlns:ns2="http://www.hello.com">55</ns2:five>
+</ns1:seq_struct>

@@ -1,6 +1,10 @@
 local ffi = require("ffi")
 
 ffi.cdef[[
+
+typedef int (XMLCALL *xmlInputReadCallback) (void * context, char * buffer, int len);
+typedef int (XMLCALL *xmlInputCloseCallback) (void * context);
+
 typedef struct _xmlParserInputBuffer xmlParserInputBuffer;
 typedef xmlParserInputBuffer *xmlParserInputBufferPtr;
 

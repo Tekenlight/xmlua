@@ -66,6 +66,9 @@ build = {
     ["xmlua.libxml2.xmlsave"] = "xmlua/libxml2/xmlsave.lua",
     ["xmlua.libxml2.xmlstring"] = "xmlua/libxml2/xmlstring.lua",
     ["xmlua.libxml2.xpath"] = "xmlua/libxml2/xpath.lua",
+    ["xmlua.libxml2.schemas"] = "xmlua/libxml2/schemas.lua",
+    ["xmlua.libxml2.relaxng"] = "xmlua/libxml2/relaxng.lua",
+    ["xmlua.libxml2.reader"] = "xmlua/libxml2/reader.lua",
     ["xmlua.namespace"] = "xmlua/namespace.lua",
     ["xmlua.namespace-declaration"] = "xmlua/namespace-declaration.lua",
     ["xmlua.node"] = "xmlua/node.lua",
@@ -77,7 +80,8 @@ build = {
     ["xmlua.text"] = "xmlua/text.lua",
     ["xmlua.xml"] = "xmlua/xml.lua",
     ["xmlua.xml-stream-sax-parser"] = "xmlua/xml-stream-sax-parser.lua",
-    ["xmlua.xml-sax-parser"] = "xmlua/xml-sax-parser.lua"
+    ["xmlua.xml-sax-parser"] = "xmlua/xml-sax-parser.lua",
+    ["xmlua.xml-reader"] = "xmlua/xml-reader.lua"
   },
   copy_directories = {
     "docs"
